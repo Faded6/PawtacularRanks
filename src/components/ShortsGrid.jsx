@@ -1,25 +1,33 @@
 import React, { useState } from 'react';
-import { Play, ExternalLink, Filter, Sparkles, Trophy, PawPrint, Search } from 'lucide-react';
+import { Play, ExternalLink, RefreshCw, Sparkles, Trophy, PawPrint, Search, Radio } from 'lucide-react';
 import YoutubeIcon from './YoutubeIcon';
-import { SHORTS_DATA, CHANNEL_INFO } from '../data/videos';
+import { CHANNEL_INFO } from '../data/videos';
 import { playSound } from '../utils/audio';
 
 const CATEGORIES = [
   { id: 'all', label: 'All Countdowns' },
   { id: 'dogs', label: '🐶 Dogs & Puppies' },
   { id: 'wild', label: '🐿️ Wild & Farm' },
+  { id: 'cats', label: '🐱 Cats & Felines' },
   { id: 'aquatic', label: '🦦 Otters & Water' },
   { id: 'birds', label: '🦆 Ducks & Birds' },
 ];
 
-export default function ShortsGrid({ onPlayShort }) {
+export default function ShortsGrid({ 
+  shorts = [], 
+  isLoading = false, 
+  isLiveSynced = false, 
+  lastSyncTime = null, 
+  onRefresh = () => {}, 
+  onPlayShort 
+}) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredShorts = SHORTS_DATA.filter((video) => {
+  const filteredShorts = shorts.filter((video) => {
     const matchesCategory = selectedCategory === 'all' || video.category === selectedCategory;
-    const matchesSearch = video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          video.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = (video.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (video.description || '').toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -28,29 +36,53 @@ export default function ShortsGrid({ onPlayShort }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-wider mb-2">
-              <YoutubeIcon className="w-3.5 h-3.5 fill-current" />
-              <span>Official Shorts Catalog</span>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-wider">
+                <YoutubeIcon className="w-3.5 h-3.5 fill-current" />
+                <span>Official Shorts Catalog</span>
+              </div>
+
+              {/* Live Sync Badge */}
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>{isLiveSynced ? 'Auto-Synced with YouTube' : 'Live Sync Ready'}</span>
+              </div>
             </div>
+
             <h2 className="text-3xl sm:text-4xl font-black text-white font-['Outfit']">
-              Explore Every Countdown 🎬
+              Every Countdown, Always Fresh 🎬
             </h2>
             <p className="text-zinc-400 text-sm sm:text-base mt-1">
-              Select any episode to watch the complete ranking, find out who took #1, and join the debate!
+              Automatically updates whenever a new countdown goes live on <span className="text-amber-400 font-semibold">{CHANNEL_INFO.handle}</span>.
             </p>
           </div>
 
-          <a
-            href={CHANNEL_INFO.youtubeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-bold text-amber-400 hover:text-amber-300 transition-colors"
-          >
-            <span>View all on YouTube Channel</span>
-            <ExternalLink className="w-4 h-4" />
-          </a>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                playSound('boing');
+                onRefresh();
+              }}
+              disabled={isLoading}
+              className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white border border-white/10 text-xs font-bold flex items-center gap-2 transition-all disabled:opacity-50"
+              title="Check YouTube for newly posted videos"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 text-amber-400 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>{isLoading ? 'Checking...' : 'Check For New Drop'}</span>
+            </button>
+
+            <a
+              href={CHANNEL_INFO.youtubeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors"
+            >
+              <span>Channel Page</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
         </div>
 
         {/* Filters & Search Row */}
@@ -99,7 +131,7 @@ export default function ShortsGrid({ onPlayShort }) {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredShorts.map((video) => (
+            {filteredShorts.map((video, idx) => (
               <div
                 key={video.id}
                 className="group relative rounded-2xl bg-gradient-to-b from-[#13151f] to-[#0c0e14] border border-white/10 hover:border-amber-500/40 p-3 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-1"
@@ -125,10 +157,10 @@ export default function ShortsGrid({ onPlayShort }) {
                   {/* Top Badges */}
                   <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between">
                     <span className="px-2 py-0.5 rounded-md bg-amber-500/90 text-black text-[10px] font-black uppercase tracking-wider shadow">
-                      {video.badge}
+                      {idx === 0 ? '🔥 Newest Drop' : (video.badge || 'Top 5')}
                     </span>
                     <span className="px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-[10px] font-bold text-white border border-white/10">
-                      Top 5
+                      Shorts
                     </span>
                   </div>
 
@@ -141,11 +173,11 @@ export default function ShortsGrid({ onPlayShort }) {
 
                   {/* Bottom Preview Pill */}
                   <div className="absolute bottom-2.5 inset-x-2.5 p-2 rounded-lg bg-black/75 backdrop-blur-md border border-white/10 flex items-center justify-between text-[10px]">
-                    <span className="text-amber-400 font-bold flex items-center gap-1">
-                      <Trophy className="w-3 h-3" />
-                      <span>{video.featuredRank1}</span>
+                    <span className="text-amber-400 font-bold flex items-center gap-1 line-clamp-1">
+                      <Trophy className="w-3 h-3 flex-shrink-0" />
+                      <span className="truncate">{video.featuredRank1 || 'Rank #1'}</span>
                     </span>
-                    <span className="text-zinc-400 font-medium">Rank #1</span>
+                    <span className="text-zinc-400 font-medium flex-shrink-0">👑 #1</span>
                   </div>
                 </div>
 
@@ -153,8 +185,8 @@ export default function ShortsGrid({ onPlayShort }) {
                 <div className="pt-3.5 px-1 space-y-2 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between text-[11px] text-zinc-400 mb-1">
-                      <span className="text-amber-400 font-semibold">{video.categoryName}</span>
-                      <span>{video.views}</span>
+                      <span className="text-amber-400 font-semibold">{video.categoryName || 'Countdown'}</span>
+                      <span className="text-zinc-500">{video.views || 'Top Pick'}</span>
                     </div>
                     <h3 className="text-sm font-extrabold text-white group-hover:text-amber-300 transition-colors line-clamp-2 font-['Outfit']">
                       {video.title}

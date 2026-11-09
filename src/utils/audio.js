@@ -124,3 +124,4 @@ export function playSound(type) {
     console.warn("Audio effect error:", e);
   }
 }
+

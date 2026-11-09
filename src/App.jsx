@@ -9,10 +9,12 @@ import FairUseSection from './components/FairUseSection';
 import Footer from './components/Footer';
 import VideoModal from './components/VideoModal';
 import SubmitPetModal from './components/SubmitPetModal';
+import { useShorts } from './hooks/useShorts';
 
 export default function App() {
   const [activeVideo, setActiveVideo] = useState(null);
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
+  const { shorts, isLoading, isLiveSynced, lastSyncTime, refresh } = useShorts();
 
   return (
     <div className="min-h-screen bg-[#090a0f] text-slate-100 selection:bg-amber-500 selection:text-black">
@@ -23,11 +25,17 @@ export default function App() {
       {/* Main Sections */}
       <main>
         <Hero 
+          latestVideo={shorts[0]}
           onPlayShort={(video) => setActiveVideo(video)}
           onOpenSubmit={() => setIsSubmitOpen(true)}
         />
 
         <ShortsGrid 
+          shorts={shorts}
+          isLoading={isLoading}
+          isLiveSynced={isLiveSynced}
+          lastSyncTime={lastSyncTime}
+          onRefresh={refresh}
           onPlayShort={(video) => setActiveVideo(video)}
         />
 

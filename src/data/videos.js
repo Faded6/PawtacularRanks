@@ -165,3 +165,4 @@ export const RANK_SIMULATOR_STEPS = [
     sound: "fanfare"
   }
 ];
+

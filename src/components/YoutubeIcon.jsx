@@ -12,3 +12,4 @@ export default function YoutubeIcon({ className = "w-4 h-4", fill = "currentColo
     </svg>
   );
 }
+

@@ -4,8 +4,8 @@ import YoutubeIcon from './YoutubeIcon';
 import { CHANNEL_INFO, SHORTS_DATA } from '../data/videos';
 import { playSound } from '../utils/audio';
 
-export default function Hero({ onPlayShort, onOpenSubmit }) {
-  const featuredVideo = SHORTS_DATA[0]; // Chihuahua ranking
+export default function Hero({ latestVideo, onPlayShort, onOpenSubmit }) {
+  const featuredVideo = latestVideo || SHORTS_DATA[0];
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -183,7 +183,7 @@ export default function Hero({ onPlayShort, onOpenSubmit }) {
                   </div>
                   <div className="text-left pr-2">
                     <p className="text-[10px] text-zinc-400 font-semibold uppercase">Daily Crown</p>
-                    <p className="text-xs font-bold text-white">Chihuahua Godzilla</p>
+                    <p className="text-xs font-bold text-white max-w-[120px] truncate">{featuredVideo.featuredRank1 || 'Today\'s Winner'}</p>
                   </div>
                 </div>
 
