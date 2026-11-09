@@ -177,7 +177,7 @@ export default function Hero({ latestVideo, onPlayShort, onOpenSubmit }) {
                 </div>
 
                 {/* Floating Rank Badge Left */}
-                <div className="absolute -left-5 top-28 bg-[#181a24]/95 border border-amber-500/40 rounded-2xl p-2.5 shadow-xl backdrop-blur-xl flex items-center gap-2.5 animate-pulse">
+                <div className="hidden sm:flex absolute -left-5 top-28 bg-[#181a24]/95 border border-amber-500/40 rounded-2xl p-2.5 shadow-xl backdrop-blur-xl items-center gap-2.5 animate-pulse">
                   <div className="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400 font-black text-sm">
                     #1
                   </div>
@@ -188,7 +188,7 @@ export default function Hero({ latestVideo, onPlayShort, onOpenSubmit }) {
                 </div>
 
                 {/* Floating Badge Right */}
-                <div className="absolute -right-5 bottom-24 bg-[#181a24]/95 border border-white/15 rounded-2xl p-2.5 shadow-xl backdrop-blur-xl flex items-center gap-2">
+                <div className="hidden sm:flex absolute -right-5 bottom-24 bg-[#181a24]/95 border border-white/15 rounded-2xl p-2.5 shadow-xl backdrop-blur-xl items-center gap-2">
                   <PawPrint className="w-5 h-5 text-amber-400" />
                   <div className="text-left pr-1">
                     <p className="text-xs font-extrabold text-amber-300">100% Real Clips</p>
